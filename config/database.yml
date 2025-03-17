@@ -26,7 +26,7 @@ development:
   host: localhost
   port: 5432
   username: postgres
-  password: iamA@lekh23
+  password: agrim2025
 
   # The specified database role being used to connect to PostgreSQL.
   # To create additional roles in PostgreSQL see `$ createuser --help`.
@@ -64,7 +64,7 @@ test:
   host: localhost
   port: 5432
   username: postgres
-  password: iamA@lekh23
+  password: agrim2025
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
