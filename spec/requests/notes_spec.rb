@@ -10,18 +10,21 @@ RSpec.describe 'Notes API', type: :request do
       tags 'Notes'
       security [bearerAuth: []]
       consumes 'application/json'
+      # Define the body as a raw JSON schema without wrapping
       parameter name: :body, in: :body, required: true, schema: {
         type: :object,
         properties: {
           title: { type: :string },
           content: { type: :string }
         },
-        required: ['title']
-      }
+        required: ['title'],
+        additionalProperties: false
+      }, description: 'Note creation payload (flat structure)'
 
       response '200', 'Note created' do
         let(:body) { { title: "Kavita's Note", content: 'Testing Swagger CRUD' } }
         before do
+          # Explicitly send the body as a flat JSON string
           submit_request(
             metadata.merge(
               headers: headers,
@@ -72,7 +75,8 @@ RSpec.describe 'Notes API', type: :request do
         properties: {
           title: { type: :string },
           content: { type: :string }
-        }
+        },
+        additionalProperties: false
       }
 
       response '200', 'Note updated' do

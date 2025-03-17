@@ -29,7 +29,9 @@ paths:
                   type: string
               required:
               - title
+              additionalProperties: false
         required: true
+        description: Note creation payload (flat structure)
   "/api/v1/notes/getNote":
     get:
       summary: Get all notes
@@ -82,6 +84,7 @@ paths:
                   type: string
                 content:
                   type: string
+              additionalProperties: false
   "/api/v1/notes/deleteNote/{id}":
     delete:
       summary: Delete a note

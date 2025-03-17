@@ -1,7 +1,10 @@
 class Api::V1::NotesController < ApplicationController
   skip_before_action :verify_authenticity_token
+
   def createNote
     token = request.headers["Authorization"]&.split(" ")&.last
+    Rails.logger.info "Raw params: #{params.inspect}" # Debug log
+    Rails.logger.info "Note params: #{note_params.inspect}" # Debug log
     result = NoteService.create_note(note_params, token)
     if result[:success]
       render json: { message: result[:message], note: result[:note] }, status: :ok
@@ -65,6 +68,8 @@ class Api::V1::NotesController < ApplicationController
   def updateNote
     token = request.headers["Authorization"]&.split(" ")&.last
     note_id = params[:id]
+    Rails.logger.info "Raw params: #{params.inspect}" # Debug log
+    Rails.logger.info "Note params: #{note_params.inspect}" # Debug log
     result = NoteService.update_note(note_id, note_params, token)
     if result[:success]
       render json: { message: result[:message], note: result[:note] }, status: :ok
@@ -73,11 +78,9 @@ class Api::V1::NotesController < ApplicationController
     end
   end
 
-
   def deleteNote
     note_id = params[:id]
     result = NoteService.delete_note(note_id)
-
     if result[:success]
       render json: { message: result[:message] }, status: :ok
     else
@@ -88,9 +91,11 @@ class Api::V1::NotesController < ApplicationController
   private
 
   def note_params
-    if params[:note]
+    if params[:note].present?
+      Rails.logger.info "Processing nested params: #{params[:note].inspect}"
       params.require(:note).permit(:title, :content)
     else
+      Rails.logger.info "Processing flat params: #{params.inspect}"
       params.permit(:title, :content)
     end
   end
