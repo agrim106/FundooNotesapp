@@ -5,32 +5,37 @@ RSpec.describe 'User Authentication', type: :request do
     post 'Register a new user' do
       tags 'Users'
       consumes 'application/json'
-      parameter name: :user, in: :body, schema: {
-        type: :object,
-        properties: {
-          name: { type: :string },
-          email: { type: :string },
-          phone_number: { type: :string },
-          password: { type: :string }
-        },
-        required: ['name', 'email', 'password']
-      }
+      parameter name: :name, in: :body, schema: { type: :string }
+      parameter name: :email, in: :body, schema: { type: :string }
+      parameter name: :phone_number, in: :body, schema: { type: :string }
+      parameter name: :password, in: :body, schema: { type: :string }
+
       response '201', 'User created successfully' do
-        let(:user) { { name: 'Test User', email: 'test@example.com', phone_number: '+1234567890', password: 'Strong@123' } }
+        let(:name) { 'Test User' }
+        let(:email) { 'test@example.com' }
+        let(:phone_number) { '+1234567890' }
+        let(:password) { 'Strong@123' }
         run_test! do |response|
           data = JSON.parse(response.body)
           expect(response).to have_http_status(:created)
           expect(data['message']).to eq('User created successfully')
         end
       end
+
       response '400', 'Invalid email' do
-        let(:user) { { name: 'Test User', email: 'invalid-email', phone_number: '+1234567890', password: 'Strong@123' } }
+        let(:name) { 'Test User' }
+        let(:email) { 'invalid-email' }
+        let(:phone_number) { '+1234567890' }
+        let(:password) { 'Strong@123' }
         run_test! do |response|
           expect(response).to have_http_status(:bad_request)
         end
       end
     end
   end
+
+  # Rest of the file remains the same...
+end
 
   path '/api/v1/users/login' do
     post 'Log in a user' do
@@ -129,4 +134,3 @@ RSpec.describe 'User Authentication', type: :request do
       end
     end
   end
-end
