@@ -66,13 +66,13 @@ class Api::V1::NotesController < ApplicationController
     token = request.headers["Authorization"]&.split(" ")&.last
     note_id = params[:id]
     result = NoteService.update_note(note_id, note_params, token)
-
     if result[:success]
       render json: { message: result[:message], note: result[:note] }, status: :ok
     else
       render json: { errors: result[:error] }, status: :unprocessable_entity
     end
   end
+
 
   def deleteNote
     note_id = params[:id]
@@ -88,6 +88,10 @@ class Api::V1::NotesController < ApplicationController
   private
 
   def note_params
-    params.permit(:title, :content)
+    if params[:note]
+      params.require(:note).permit(:title, :content)
+    else
+      params.permit(:title, :content)
+    end
   end
 end

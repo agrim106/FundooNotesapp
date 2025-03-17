@@ -11,10 +11,10 @@ RSpec.describe 'User Authentication', type: :request do
       parameter name: :password, in: :body, schema: { type: :string }
 
       response '201', 'User created successfully' do
-        let(:name) { 'Test User' }
-        let(:email) { 'test@example.com' }
-        let(:phone_number) { '+1234567890' }
-        let(:password) { 'Strong@123' }
+        let(:name) { 'Kavita Chaudhary' }
+        let(:email) { 'kc247989@gmail.com' }
+        let(:phone_number) { '+917888465372' }
+        let(:password) { 'password@123' }
         run_test! do |response|
           data = JSON.parse(response.body)
           expect(response).to have_http_status(:created)
@@ -23,10 +23,10 @@ RSpec.describe 'User Authentication', type: :request do
       end
 
       response '400', 'Invalid email' do
-        let(:name) { 'Test User' }
+        let(:name) { 'Kavita Chaudhary' }
         let(:email) { 'invalid-email' }
-        let(:phone_number) { '+1234567890' }
-        let(:password) { 'Strong@123' }
+        let(:phone_number) { '+917888465372' }
+        let(:password) { 'password@123' }
         run_test! do |response|
           expect(response).to have_http_status(:bad_request)
         end
@@ -34,24 +34,17 @@ RSpec.describe 'User Authentication', type: :request do
     end
   end
 
-  # Rest of the file remains the same...
-end
-
   path '/api/v1/users/login' do
     post 'Log in a user' do
       tags 'Users'
       consumes 'application/json'
-      parameter name: :credentials, in: :body, schema: {
-        type: :object,
-        properties: {
-          email: { type: :string },
-          password: { type: :string }
-        },
-        required: ['email', 'password']
-      }
+      parameter name: :email, in: :body, schema: { type: :string }
+      parameter name: :password, in: :body, schema: { type: :string }
+
       response '200', 'Login successful' do
-        let(:user) { User.create!(name: 'Test User', email: 'test@example.com', phone_number: '+1234567890', password: 'Strong@123') }
-        let(:credentials) { { email: 'test@example.com', password: 'Strong@123' } }
+        let(:user) { User.create!(name: 'Kavita Chaudhary', email: 'kc247989@gmail.com', phone_number: '+917888465372', password: 'password@123') }
+        let(:email) { 'kc247989@gmail.com' }
+        let(:password) { 'password@123' }
         run_test! do |response|
           data = JSON.parse(response.body)
           expect(response).to have_http_status(:ok)
@@ -59,17 +52,20 @@ end
           expect(data['token']).not_to be_nil
         end
       end
+
       response '401', 'Invalid credentials' do
-        let(:user) { User.create!(name: 'Test User', email: 'test@example.com', phone_number: '+1234567890', password: 'Strong@123') }
-        let(:credentials) { { email: 'invalid@example.com', password: 'Strong@123' } }
+        let(:user) { User.create!(name: 'Kavita Chaudhary', email: 'kc247989@gmail.com', phone_number: '+917888465372', password: 'password@123') }
+        let(:email) { 'invalid@example.com' }
+        let(:password) { 'password@123' }
         run_test! do |response|
-          data = JSON.parse(response.body)
+          data = JSON vase(response.body)
           expect(response).to have_http_status(:unauthorized)
           expect(data['error']).to eq('Invalid email or password')
         end
       end
+
       response '400', 'Missing parameters' do
-        let(:credentials) { { password: 'Strong@123' } }
+        let(:password) { 'password@123' }
         run_test! do |response|
           data = JSON.parse(response.body)
           expect(response).to have_http_status(:bad_request)
@@ -80,27 +76,23 @@ end
     end
   end
 
-  path '/api/v1/users/forget' do  # Fixed typo
+  path '/api/v1/users/forget' do
     post 'Request password reset' do
       tags 'Users'
       consumes 'application/json'
-      parameter name: :user, in: :body, schema: {
-        type: :object,
-        properties: {
-          email: { type: :string }
-        },
-        required: ['email']
-      }
+      parameter name: :email, in: :body, schema: { type: :string }
+
       response '200', 'OTP sent' do
-        let(:user) { User.create!(name: 'Test User', email: 'test@example.com', password: 'Strong@123') }
-        let(:user_params) { { email: 'test@example.com' } }
+        let(:user) { User.create!(name: 'Kavita Chaudhary', email: 'kc247989@gmail.com', password: 'password@123') }
+        let(:email) { 'kc247989@gmail.com' }
         run_test! do |response|
           data = JSON.parse(response.body)
           expect(data['message']).to eq('OTP sent successfully to your email')
         end
       end
+
       response '404', 'Email not found' do
-        let(:user_params) { { email: 'invalid@example.com' } }
+        let(:email) { 'invalid@example.com' }
         run_test! do |response|
           data = JSON.parse(response.body)
           expect(data['errors']).to eq('Email not registered')
@@ -114,19 +106,15 @@ end
       tags 'Users'
       consumes 'application/json'
       parameter name: :id, in: :path, type: :string
-      parameter name: :reset, in: :body, schema: {
-        type: :object,
-        properties: {
-          new_password: { type: :string },
-          otp: { type: :string }
-        },
-        required: ['new_password', 'otp']
-      }
+      parameter name: :new_password, in: :body, schema: { type: :string }
+      parameter name: :otp, in: :body, schema: { type: :string }
+
       response '200', 'Password reset successful' do
-        let(:user) { User.create!(name: 'Test User', email: 'test@example.com', password: 'Strong@123') }
+        let(:user) { User.create!(name: 'Kavita Chaudhary', email: 'kc247989@gmail.com', password: 'password@123') }
         let(:id) { user.id }
-        let(:otp) { UserService.forgetPassword({ email: 'test@example.com' })[:otp] }
-        let(:reset) { { new_password: 'NewPass@123', otp: otp } }
+        let(:otp) { UserService.forgetPassword({ email: 'kc247989@gmail.com' })[:otp] }
+        let(:new_password) { 'newpassword@123' }
+        let(:otp_param) { otp }
         run_test! do |response|
           data = JSON.parse(response.body)
           expect(data['message']).to eq('Password reset successfully')
@@ -134,3 +122,4 @@ end
       end
     end
   end
+end

@@ -1,16 +1,16 @@
 require 'rails_helper'
 
 RSpec.describe 'Notes API', type: :request do
-  let(:user) { User.create!(name: 'Test User', email: 'test@example.com', password: 'Strong@123') }
+  let(:user) { User.create!(name: 'Kavita Chaudhary', email: 'kc247989@gmail.com', password: 'Password@123') }
   let(:token) { JsonWebToken.encode(user_id: user.id) }
-  let(:headers) { { 'Authorization' => "Bearer #{token}" } }
+  let(:headers) { { 'Authorization' => "Bearer #{token}", 'CONTENT_TYPE' => 'application/json' } }
 
-  path '/api/v1/notes' do
+  path '/api/v1/notes/create' do
     post 'Create a note' do
       tags 'Notes'
       security [bearerAuth: []]
       consumes 'application/json'
-      parameter name: :note, in: :body, schema: {
+      parameter name: :body, in: :body, required: true, schema: {
         type: :object,
         properties: {
           title: { type: :string },
@@ -20,15 +20,24 @@ RSpec.describe 'Notes API', type: :request do
       }
 
       response '200', 'Note created' do
-        let(:note) { { title: 'Test Note', content: 'Hello from Swagger' } }
-        before { submit_request(metadata.merge(headers: headers)) }
+        let(:body) { { title: "Kavita's Note", content: 'Testing Swagger CRUD' } }
+        before do
+          submit_request(
+            metadata.merge(
+              headers: headers,
+              body: body.to_json
+            )
+          )
+        end
         run_test! do |response|
           data = JSON.parse(response.body)
           expect(data['message']).to eq('Note added successfully')
         end
       end
     end
+  end
 
+  path '/api/v1/notes/getNote' do
     get 'Get all notes' do
       tags 'Notes'
       security [bearerAuth: []]
@@ -39,7 +48,7 @@ RSpec.describe 'Notes API', type: :request do
     end
   end
 
-  path '/api/v1/notes/{id}' do
+  path '/api/v1/notes/getNoteById/{id}' do
     get 'Get a note by ID' do
       tags 'Notes'
       security [bearerAuth: []]
@@ -50,30 +59,42 @@ RSpec.describe 'Notes API', type: :request do
         run_test!
       end
     end
+  end
 
+  path '/api/v1/notes/updateNote/{id}' do
     patch 'Update a note' do
       tags 'Notes'
       security [bearerAuth: []]
       consumes 'application/json'
       parameter name: :id, in: :path, type: :string
-      parameter name: :note, in: :body, schema: {
+      parameter name: :body, in: :body, schema: {
         type: :object,
         properties: {
           title: { type: :string },
           content: { type: :string }
         }
       }
+
       response '200', 'Note updated' do
         let(:id) { user.notes.create!(title: 'Test', content: 'Note').id }
-        let(:note) { { title: 'Updated Title' } }
-        before { submit_request(metadata.merge(headers: headers)) }
+        let(:body) { { title: 'Updated Title', content: 'Updated Content' } }
+        before do
+          submit_request(
+            metadata.merge(
+              headers: headers,
+              body: body.to_json
+            )
+          )
+        end
         run_test! do |response|
           data = JSON.parse(response.body)
           expect(data['message']).to eq('Note updated successfully')
         end
       end
     end
+  end
 
+  path '/api/v1/notes/deleteNote/{id}' do
     delete 'Delete a note' do
       tags 'Notes'
       security [bearerAuth: []]
@@ -89,7 +110,7 @@ RSpec.describe 'Notes API', type: :request do
     end
   end
 
-  path '/api/v1/notes/{id}/archive_toggle' do
+  path '/api/v1/notes/archiveToggle/{id}' do
     patch 'Toggle archive status' do
       tags 'Notes'
       security [bearerAuth: []]
@@ -105,7 +126,7 @@ RSpec.describe 'Notes API', type: :request do
     end
   end
 
-  path '/api/v1/notes/{id}/trash_toggle' do
+  path '/api/v1/notes/trashToggle/{id}' do
     patch 'Toggle trash status' do
       tags 'Notes'
       security [bearerAuth: []]

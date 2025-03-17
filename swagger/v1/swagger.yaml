@@ -6,7 +6,7 @@ info:
   description: API documentation for Fundoo Notes, including authentication and note
     management.
 paths:
-  "/api/v1/notes":
+  "/api/v1/notes/create":
     post:
       summary: Create a note
       tags:
@@ -29,6 +29,8 @@ paths:
                   type: string
               required:
               - title
+        required: true
+  "/api/v1/notes/getNote":
     get:
       summary: Get all notes
       tags:
@@ -38,7 +40,7 @@ paths:
       responses:
         '200':
           description: Notes retrieved
-  "/api/v1/notes/{id}":
+  "/api/v1/notes/getNoteById/{id}":
     get:
       summary: Get a note by ID
       tags:
@@ -54,6 +56,7 @@ paths:
       responses:
         '200':
           description: Note found
+  "/api/v1/notes/updateNote/{id}":
     patch:
       summary: Update a note
       tags:
@@ -79,6 +82,7 @@ paths:
                   type: string
                 content:
                   type: string
+  "/api/v1/notes/deleteNote/{id}":
     delete:
       summary: Delete a note
       tags:
@@ -94,7 +98,7 @@ paths:
       responses:
         '200':
           description: Note deleted
-  "/api/v1/notes/{id}/archive_toggle":
+  "/api/v1/notes/archiveToggle/{id}":
     patch:
       summary: Toggle archive status
       tags:
@@ -110,7 +114,7 @@ paths:
       responses:
         '200':
           description: Archive status toggled
-  "/api/v1/notes/{id}/trash_toggle":
+  "/api/v1/notes/trashToggle/{id}":
     patch:
       summary: Toggle trash status
       tags:
@@ -141,20 +145,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                email:
-                  type: string
-                phone_number:
-                  type: string
-                password:
-                  type: string
-              required:
-              - name
-              - email
-              - password
+              type: string
   "/api/v1/users/login":
     post:
       summary: Log in a user
@@ -172,15 +163,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                password:
-                  type: string
-              required:
-              - email
-              - password
+              type: string
   "/api/v1/users/forget":
     post:
       summary: Request password reset
@@ -196,12 +179,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                email:
-                  type: string
-              required:
-              - email
+              type: string
   "/api/v1/users/reset/{id}":
     patch:
       summary: Reset password with OTP
@@ -220,15 +198,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                new_password:
-                  type: string
-                otp:
-                  type: string
-              required:
-              - new_password
-              - otp
+              type: string
 servers:
 - url: http://localhost:3000
   description: Local Development Server
