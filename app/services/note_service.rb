@@ -102,10 +102,8 @@ class NoteService
     def self.trash_toggle(note_id)
       note = Note.find_by(id: note_id)
       return { success: false, errors: "Couldn't toggle the status" } unless note
-    
       note.update(is_deleted: !note.is_deleted)
       REDIS.del("user_#{note.user_id}_notes") # Clear cache
-    
       { success: true, message: "Status toggled" }
     end
 
